@@ -55,6 +55,69 @@ async function aiRewriteContent(
     }
 }
 
+// Download image and upload to Supabase Storage
+async function downloadAndUploadImage(
+    imageUrl: string,
+    sourceId: string
+): Promise<string | null> {
+    if (!imageUrl) return null;
+
+    try {
+        // Fetch image
+        const response = await fetch(imageUrl, {
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (compatible; GoldenLogistics/1.0)',
+            },
+        });
+
+        if (!response.ok) return null;
+
+        const contentType = response.headers.get('content-type') || 'image/jpeg';
+        const buffer = await response.arrayBuffer();
+
+        // Generate unique filename
+        const ext = contentType.includes('png') ? 'png' :
+            contentType.includes('webp') ? 'webp' :
+                contentType.includes('gif') ? 'gif' : 'jpg';
+        const filename = `aggregator/${sourceId}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+
+        // Upload to Supabase Storage
+        const { data, error } = await supabase.storage
+            .from('media')
+            .upload(filename, buffer, {
+                contentType,
+                upsert: false,
+            });
+
+        if (error) {
+            console.error('Storage upload error:', error);
+            return null;
+        }
+
+        // Get public URL
+        const { data: urlData } = supabase.storage
+            .from('media')
+            .getPublicUrl(filename);
+
+        return urlData.publicUrl;
+    } catch (error) {
+        console.error('Image download error:', error);
+        return null;
+    }
+}
+
+// Simple title similarity check (Jaccard similarity)
+function isSimilarTitle(title1: string, title2: string, threshold: number = 0.6): boolean {
+    const normalize = (s: string) => s.toLowerCase().replace(/[^a-z0-9\s]/g, '').split(/\s+/);
+    const words1 = new Set(normalize(title1));
+    const words2 = new Set(normalize(title2));
+
+    const intersection = new Set([...words1].filter(x => words2.has(x)));
+    const union = new Set([...words1, ...words2]);
+
+    return intersection.size / union.size >= threshold;
+}
+
 export async function GET(request: NextRequest) {
     return handleFetch(request);
 }
@@ -92,6 +155,7 @@ async function handleFetch(request: NextRequest) {
         }
 
         let totalFetched = 0;
+        let totalDuplicates = 0;
         const results: any[] = [];
 
         for (const source of sources) {
@@ -99,19 +163,49 @@ async function handleFetch(request: NextRequest) {
                 // Parse the feed
                 const feed = await parseFeed(source.url);
                 let fetchedFromSource = 0;
+                let duplicatesFromSource = 0;
+
+                // Get recent titles for similarity check
+                const { data: recentArticles } = await supabase
+                    .from('imported_articles')
+                    .select('original_title')
+                    .eq('source_id', source.id)
+                    .order('created_at', { ascending: false })
+                    .limit(50);
+
+                const recentTitles = recentArticles?.map(a => a.original_title) || [];
 
                 for (const item of feed.items.slice(0, 10)) { // Max 10 items per source
-                    // Check if already exists
+                    // Check if URL already exists
                     const { data: existing } = await supabase
                         .from('imported_articles')
                         .select('id')
                         .eq('original_url', item.link)
                         .single();
 
-                    if (existing) continue; // Skip duplicates
+                    if (existing) {
+                        duplicatesFromSource++;
+                        continue;
+                    }
+
+                    // Check title similarity
+                    const isDuplicate = recentTitles.some(t => isSimilarTitle(t, item.title));
+                    if (isDuplicate) {
+                        duplicatesFromSource++;
+                        continue;
+                    }
 
                     // Extract featured image
-                    const featuredImage = extractFeaturedImage(item);
+                    let featuredImage = extractFeaturedImage(item);
+
+                    // Download and upload image to Supabase Storage
+                    if (featuredImage) {
+                        const uploadedUrl = await downloadAndUploadImage(featuredImage, source.id);
+                        if (uploadedUrl) {
+                            featuredImage = uploadedUrl;
+                        }
+                        // Keep original URL as fallback if upload fails
+                    }
 
                     // Clean content
                     const cleanedContent = cleanContent(item.content);
@@ -140,21 +234,26 @@ async function handleFetch(request: NextRequest) {
                     if (!insertError) {
                         fetchedFromSource++;
                         totalFetched++;
+                        recentTitles.push(item.title); // Add to duplicate check list
                     }
                 }
 
-                // Update source fetch time and count
+                totalDuplicates += duplicatesFromSource;
+
+                // Update source fetch time and increment articles count
+                const newCount = (source.articles_count || 0) + fetchedFromSource;
                 await supabase
                     .from('feed_sources')
                     .update({
                         last_fetched_at: new Date().toISOString(),
-                        articles_count: supabase.rpc('increment', { row_id: source.id, amount: fetchedFromSource }),
+                        articles_count: newCount,
                     })
                     .eq('id', source.id);
 
                 results.push({
                     source: source.name,
                     fetched: fetchedFromSource,
+                    duplicates: duplicatesFromSource,
                 });
 
             } catch (sourceError) {
@@ -174,6 +273,7 @@ async function handleFetch(request: NextRequest) {
         return NextResponse.json({
             success: true,
             totalFetched,
+            totalDuplicates,
             results,
             timestamp: new Date().toISOString(),
         });
