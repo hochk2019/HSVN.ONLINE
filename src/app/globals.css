@@ -1,0 +1,386 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Core colors - Light mode */
+  --foreground: #0F172A;
+  --foreground-muted: #475569;
+  --background: #FAFBFC;
+  --surface: #FFFFFF;
+  --border: #E2E8F0;
+
+  /* Golden brand - can be overridden by ThemeProvider */
+  --golden: #C9A227;
+  --golden-light: #F5CE47;
+  --golden-dark: #856B1A;
+  --golden-glow: rgba(201, 162, 39, 0.15);
+
+  /* Dynamic color variables - overridden by ThemeProvider */
+  --color-golden: var(--golden);
+  --color-golden-dark: var(--golden-dark);
+  --color-golden-light: var(--golden-light);
+
+  /* Heading color - can be overridden */
+  --color-heading: inherit;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground: #F1F5F9;
+    --foreground-muted: #94A3B8;
+    --background: #0F172A;
+    --surface: #1E293B;
+    --border: #334155;
+  }
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-weight: 400;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* High contrast text utilities */
+@layer utilities {
+  .text-primary {
+    color: var(--foreground);
+  }
+
+  .text-secondary {
+    color: var(--foreground-muted);
+  }
+
+  .bg-surface {
+    background-color: var(--surface);
+  }
+
+  .border-subtle {
+    border-color: var(--border);
+  }
+
+  /* Dynamic heading color */
+  .text-heading {
+    color: var(--color-heading, inherit);
+  }
+
+  /* Dynamic golden colors - can be changed via ThemeProvider */
+  .bg-dynamic-golden {
+    background-color: var(--color-golden);
+  }
+
+  .text-dynamic-golden {
+    color: var(--color-golden);
+  }
+
+  .border-dynamic-golden {
+    border-color: var(--color-golden);
+  }
+}
+
+/* Golden gradient text - richer */
+.text-golden-gradient {
+  background: linear-gradient(135deg, #F5CE47 0%, #C9A227 50%, #856B1A 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Card hover effects - enhanced */
+.card-hover {
+  @apply transition-all duration-300 ease-out border border-transparent;
+}
+
+.card-hover:hover {
+  @apply -translate-y-1 border-golden/30;
+  box-shadow: 0 10px 40px 0 rgba(201, 162, 39, 0.15);
+}
+
+/* Glassmorphism - improved */
+.glass {
+  @apply bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-slate-200/50 dark:border-slate-700/50;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom scrollbar - refined */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-slate-100 dark:bg-slate-800;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-golden/60 rounded-full border-2 border-slate-100 dark:border-slate-800;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-golden;
+}
+
+/* Typography for article content - high contrast */
+.prose {
+  @apply text-slate-700 dark:text-slate-200;
+}
+
+.prose h1,
+.prose h2,
+.prose h3,
+.prose h4 {
+  @apply font-heading font-bold text-slate-900 dark:text-white;
+}
+
+.prose p {
+  @apply text-slate-600 dark:text-slate-300 leading-relaxed;
+}
+
+.prose a {
+  @apply text-golden-600 dark:text-golden-400 hover:underline font-medium;
+}
+
+.prose blockquote {
+  @apply border-l-4 border-golden bg-golden/5 py-3 pl-4 italic text-slate-700 dark:text-slate-300;
+}
+
+.prose code {
+  @apply bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded text-sm font-medium text-slate-800 dark:text-slate-200;
+}
+
+.prose pre {
+  @apply bg-slate-900 dark:bg-slate-950 rounded-xl p-4 overflow-x-auto;
+}
+
+.prose table {
+  @apply w-full border-collapse;
+}
+
+.prose th,
+.prose td {
+  @apply border border-slate-200 dark:border-slate-700 px-4 py-2;
+}
+
+.prose th {
+  @apply bg-slate-50 dark:bg-slate-800 font-semibold text-slate-900 dark:text-white;
+}
+
+.prose li {
+  @apply text-slate-600 dark:text-slate-300;
+}
+
+/* Callout boxes - improved visibility */
+.callout {
+  @apply p-4 rounded-xl border-l-4;
+}
+
+.callout-tip {
+  @apply bg-emerald-50 dark:bg-emerald-900/20 border-emerald-500 text-emerald-800 dark:text-emerald-200;
+}
+
+.callout-warning {
+  @apply bg-amber-50 dark:bg-amber-900/20 border-amber-500 text-amber-800 dark:text-amber-200;
+}
+
+.callout-info {
+  @apply bg-sky-50 dark:bg-sky-900/20 border-sky-500 text-sky-800 dark:text-sky-200;
+}
+
+/* Animation utilities */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.shimmer {
+  background: linear-gradient(90deg,
+      rgba(201, 162, 39, 0) 0%,
+      rgba(201, 162, 39, 0.3) 50%,
+      rgba(201, 162, 39, 0) 100%);
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+/* Button enhancements */
+.btn-golden {
+  @apply bg-golden hover:bg-golden-600 text-white font-semibold px-6 py-3 rounded-xl transition-all duration-300;
+  box-shadow: 0 4px 14px 0 rgba(201, 162, 39, 0.25);
+}
+
+.btn-golden:hover {
+  box-shadow: 0 6px 20px 0 rgba(201, 162, 39, 0.35);
+  transform: translateY(-1px);
+}
+
+/* Section backgrounds */
+.section-light {
+  @apply bg-slate-50 dark:bg-slate-900/50;
+}
+
+.section-dark {
+  @apply bg-slate-900 text-white;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  @apply outline-none ring-2 ring-golden/50 border-golden;
+}
+
+/* Hero Background Pattern */
+.hero-pattern {
+  background-image:
+    radial-gradient(circle at 25% 25%, rgba(201, 162, 39, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 75% 75%, rgba(201, 162, 39, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 50% 10%, rgba(201, 162, 39, 0.05) 0%, transparent 40%);
+}
+
+.hero-dots {
+  background-image: radial-gradient(rgba(201, 162, 39, 0.15) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* Floating Animation */
+@keyframes float {
+
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+
+.animate-float-slow {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-float-delayed {
+  animation: float 5s ease-in-out infinite;
+  animation-delay: 1s;
+}
+
+/* Pulse Glow */
+@keyframes pulse-glow {
+
+  0%,
+  100% {
+    box-shadow: 0 0 20px rgba(201, 162, 39, 0.3);
+  }
+
+  50% {
+    box-shadow: 0 0 40px rgba(201, 162, 39, 0.5);
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 3s ease-in-out infinite;
+}
+
+/* Premium Card Styles */
+.premium-card {
+  @apply relative overflow-hidden rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.premium-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #C9A227, #F5CE47, #C9A227);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.premium-card:hover {
+  transform: translateY(-8px);
+  box-shadow:
+    0 20px 40px rgba(0, 0, 0, 0.1),
+    0 0 0 1px rgba(201, 162, 39, 0.2);
+}
+
+.premium-card:hover::before {
+  opacity: 1;
+}
+
+/* Card Icon Container */
+.card-icon-container {
+  @apply relative w-16 h-16 rounded-xl flex items-center justify-center;
+  background: linear-gradient(135deg, rgba(201, 162, 39, 0.2) 0%, rgba(201, 162, 39, 0.05) 100%);
+  border: 1px solid rgba(201, 162, 39, 0.2);
+}
+
+.card-icon-container::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(201, 162, 39, 0.3), transparent);
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.premium-card:hover .card-icon-container::after {
+  opacity: 1;
+}
+
+/* Gradient Text Shine */
+@keyframes text-shine {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  100% {
+    background-position: 200% 50%;
+  }
+}
+
+.text-shine {
+  background: linear-gradient(90deg, #C9A227, #F5CE47, #C9A227, #F5CE47);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: text-shine 3s linear infinite;
+}

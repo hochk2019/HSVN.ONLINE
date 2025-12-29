@@ -1,0 +1,9 @@
+# Ignore generated and config files
+node_modules/
+.next/
+out/
+dist/
+*.min.js
+*.d.ts
+pnpm-lock.yaml
+package-lock.json
