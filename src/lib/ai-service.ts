@@ -210,6 +210,24 @@ async function getAIConfig(): Promise<{
 }
 
 /**
+ * Strip thinking tags from AI response
+ * Some AI models (like DeepSeek, Claude) include <think>...</think> tags
+ * with their internal reasoning. We need to remove these from the final output.
+ */
+function stripThinkingTags(content: string): string {
+    // Remove <think>...</think> blocks (including newlines inside)
+    let result = content.replace(/<think>[\s\S]*?<\/think>/gi, '');
+
+    // Also handle unclosed think tags (if AI was cut off)
+    result = result.replace(/<think>[\s\S]*/gi, '');
+
+    // Clean up any leftover whitespace at start
+    result = result.trim();
+
+    return result;
+}
+
+/**
  * Call a single model API
  */
 async function callSingleModel(
@@ -245,11 +263,19 @@ async function callSingleModel(
         }
 
         const data = await response.json();
-        const content = data.choices?.[0]?.message?.content || '';
+        let content = data.choices?.[0]?.message?.content || '';
 
         if (!content) {
             console.warn(`[AI] Model ${model} returned empty content`);
             return { content: '', error: 'Response content is empty. Details: ' + JSON.stringify(data) };
+        }
+
+        // Strip thinking tags from response
+        content = stripThinkingTags(content);
+
+        if (!content) {
+            console.warn(`[AI] Model ${model} content empty after stripping think tags`);
+            return { content: '', error: 'Response only contained thinking, no actual content' };
         }
 
         return { content, error: null };
