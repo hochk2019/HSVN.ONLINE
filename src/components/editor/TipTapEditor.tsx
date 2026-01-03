@@ -5,6 +5,7 @@ import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Link from '@tiptap/extension-link';
 import { ResizableImage } from './ResizableImage';
+import InlineStyle from './InlineStyle';
 import Placeholder from '@tiptap/extension-placeholder';
 import TextAlign from '@tiptap/extension-text-align';
 import Underline from '@tiptap/extension-underline';
@@ -171,6 +172,7 @@ export default function TipTapEditor({
             TaskList,
             TaskItem.configure({ nested: true }),
             CodeBlockLowlight.configure({ lowlight }),
+            InlineStyle, // Custom extension to preserve inline styles
         ],
         content,
         editable,
