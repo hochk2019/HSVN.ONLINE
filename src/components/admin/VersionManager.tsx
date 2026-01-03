@@ -68,7 +68,8 @@ export default function VersionManager({ softwareId, softwareName, versions }: V
         if (file) {
             setSelectedFile(file);
             setFileName(file.name);
-            setFileSize(file.size.toString());
+            // Convert bytes to MB for display
+            setFileSize((file.size / (1024 * 1024)).toFixed(2));
             setError(null);
         }
     };
@@ -142,7 +143,9 @@ export default function VersionManager({ softwareId, softwareName, versions }: V
             formData.set('release_notes', releaseNotes);
             formData.set('file_url', finalFileUrl);
             formData.set('file_name', fileName);
-            formData.set('file_size', fileSize);
+            // Convert MB back to bytes for storage
+            const fileSizeBytes = Math.round(parseFloat(fileSize || '0') * 1024 * 1024);
+            formData.set('file_size', fileSizeBytes.toString());
             formData.set('is_latest', isLatest.toString());
             formData.set('status', 'active');
 
@@ -339,12 +342,13 @@ export default function VersionManager({ softwareId, softwareName, versions }: V
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-medium mb-1">Kích thước (bytes)</label>
+                                        <label className="block text-sm font-medium mb-1">Kích thước (MB)</label>
                                         <Input
                                             type="number"
+                                            step="0.01"
                                             value={fileSize}
                                             onChange={(e) => setFileSize(e.target.value)}
-                                            placeholder="1048576"
+                                            placeholder="10.5"
                                         />
                                     </div>
                                 </div>
