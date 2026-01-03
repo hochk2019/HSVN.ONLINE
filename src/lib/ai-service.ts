@@ -400,15 +400,15 @@ export async function generateExcerpt(content: string, title: string): Promise<C
     const messages: ChatMessage[] = [
         {
             role: 'system',
-            content: 'Bạn là trợ lý viết nội dung chuyên nghiệp. Viết tóm tắt ngắn gọn bằng tiếng Việt, tối đa 160 ký tự, thu hút người đọc. Chỉ trả về văn bản tóm tắt, không có giải thích.'
+            content: 'Bạn là trợ lý viết nội dung chuyên nghiệp. Viết tóm tắt ngắn gọn bằng tiếng Việt, từ 120-160 ký tự, thu hút người đọc. QUAN TRỌNG: Chỉ trả về văn bản tóm tắt hoàn chỉnh, không giải thích, không suy nghĩ, không đánh số.'
         },
         {
             role: 'user',
-            content: `Tiêu đề: ${title}\n\nNội dung:\n${content.substring(0, 2000)}\n\nViết đoạn tóm tắt SEO-friendly:`
+            content: `Tiêu đề: ${title}\n\nNội dung:\n${content.substring(0, 2000)}\n\nViết đoạn tóm tắt SEO-friendly (120-160 ký tự):`
         }
     ];
 
-    return chatCompletion({ messages, max_tokens: 500 });
+    return chatCompletion({ messages, max_tokens: 800 });
 }
 
 /**
@@ -418,15 +418,15 @@ export async function generateMetaDescription(content: string, title: string): P
     const messages: ChatMessage[] = [
         {
             role: 'system',
-            content: 'Bạn là chuyên gia SEO. Viết meta description tối ưu bằng tiếng Việt, 120-155 ký tự, có từ khóa chính, kêu gọi hành động. Chỉ trả về meta description.'
+            content: 'Bạn là chuyên gia SEO. Viết meta description tối ưu bằng tiếng Việt, 120-155 ký tự, có từ khóa chính, kêu gọi hành động. QUAN TRỌNG: Chỉ trả về meta description hoàn chỉnh, không giải thích, không suy nghĩ.'
         },
         {
             role: 'user',
-            content: `Tiêu đề: ${title}\n\nNội dung:\n${content.substring(0, 1500)}\n\nMeta description:`
+            content: `Tiêu đề: ${title}\n\nNội dung:\n${content.substring(0, 1500)}\n\nMeta description (120-155 ký tự):`
         }
     ];
 
-    return chatCompletion({ messages, max_tokens: 500 });
+    return chatCompletion({ messages, max_tokens: 800 });
 }
 
 /**
