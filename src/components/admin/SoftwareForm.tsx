@@ -35,9 +35,16 @@ interface Software {
     meta_description: string | null;
 }
 
+interface MediaFile {
+    id?: string;
+    url: string;
+    name: string;
+}
+
 interface SoftwareFormProps {
     software?: Software | null;
     mode: 'create' | 'edit';
+    mediaFiles?: MediaFile[];
 }
 
 function generateSlug(name: string): string {
@@ -53,7 +60,7 @@ function generateSlug(name: string): string {
         .trim();
 }
 
-export default function SoftwareForm({ software, mode }: SoftwareFormProps) {
+export default function SoftwareForm({ software, mode, mediaFiles = [] }: SoftwareFormProps) {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -291,6 +298,7 @@ export default function SoftwareForm({ software, mode }: SoftwareFormProps) {
                                 content={descriptionHtml}
                                 onChange={handleEditorChange}
                                 placeholder="Mô tả chi tiết về phần mềm, hướng dẫn sử dụng..."
+                                mediaFiles={mediaFiles as any}
                             />
                         </CardContent>
                     </Card>

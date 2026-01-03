@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 import { getSoftwareById, getSoftwareVersions } from '@/lib/software-actions';
+import { getMediaFiles } from '@/lib/post-actions';
 import SoftwareForm from '@/components/admin/SoftwareForm';
 import VersionManager from '@/components/admin/VersionManager';
 
@@ -15,9 +16,10 @@ export default async function EditSoftwarePage({
     params: Promise<{ id: string }>;
 }) {
     const { id } = await params;
-    const [{ software, error }, { versions }] = await Promise.all([
+    const [{ software, error }, { versions }, { mediaFiles }] = await Promise.all([
         getSoftwareById(id),
         getSoftwareVersions(id),
+        getMediaFiles(),
     ]);
 
     if (error || !software) {
@@ -26,7 +28,7 @@ export default async function EditSoftwarePage({
 
     return (
         <div className="space-y-8">
-            <SoftwareForm software={software} mode="edit" />
+            <SoftwareForm software={software} mode="edit" mediaFiles={mediaFiles} />
 
             <VersionManager
                 softwareId={software.id}
@@ -36,3 +38,4 @@ export default async function EditSoftwarePage({
         </div>
     );
 }
+
