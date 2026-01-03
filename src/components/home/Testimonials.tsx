@@ -47,7 +47,7 @@ export default async function Testimonials() {
     try {
         const { testimonials: dbTestimonials, error } = await getTestimonials();
         if (!error && dbTestimonials && dbTestimonials.length > 0) {
-            testimonials = dbTestimonials;
+            testimonials = dbTestimonials as typeof defaultTestimonials;
         }
     } catch {
         // Use default testimonials on error

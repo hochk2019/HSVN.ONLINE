@@ -28,7 +28,7 @@ export default async function EditSourcePage({ params }: Props) {
                 </p>
             </div>
 
-            <SourceForm source={source} categories={categories || []} />
+            <SourceForm source={source as Parameters<typeof SourceForm>[0]['source']} categories={(categories || []).map(c => ({ id: c.id, name: c.name }))} />
         </div>
     );
 }

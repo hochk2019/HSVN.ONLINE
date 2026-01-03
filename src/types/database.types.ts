@@ -44,6 +44,50 @@ export type Database = {
         }
         Relationships: []
       }
+      analytics_visits: {
+        Row: {
+          browser: string | null
+          created_at: string | null
+          device_type: string | null
+          id: string
+          page_path: string
+          post_id: string | null
+          referrer: string | null
+          view_duration: number | null
+          visitor_hash: string | null
+        }
+        Insert: {
+          browser?: string | null
+          created_at?: string | null
+          device_type?: string | null
+          id?: string
+          page_path: string
+          post_id?: string | null
+          referrer?: string | null
+          view_duration?: number | null
+          visitor_hash?: string | null
+        }
+        Update: {
+          browser?: string | null
+          created_at?: string | null
+          device_type?: string | null
+          id?: string
+          page_path?: string
+          post_id?: string | null
+          referrer?: string | null
+          view_duration?: number | null
+          visitor_hash?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "analytics_visits_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       audit_logs: {
         Row: {
           action: string
@@ -138,7 +182,7 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "categories"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       chat_sessions: {
@@ -423,6 +467,119 @@ export type Database = {
           },
         ]
       }
+      feed_sources: {
+        Row: {
+          articles_count: number | null
+          category_id: string | null
+          created_at: string | null
+          fetch_interval: number | null
+          id: string
+          is_active: boolean | null
+          last_fetched_at: string | null
+          name: string
+          updated_at: string | null
+          url: string
+        }
+        Insert: {
+          articles_count?: number | null
+          category_id?: string | null
+          created_at?: string | null
+          fetch_interval?: number | null
+          id?: string
+          is_active?: boolean | null
+          last_fetched_at?: string | null
+          name: string
+          updated_at?: string | null
+          url: string
+        }
+        Update: {
+          articles_count?: number | null
+          category_id?: string | null
+          created_at?: string | null
+          fetch_interval?: number | null
+          id?: string
+          is_active?: boolean | null
+          last_fetched_at?: string | null
+          name?: string
+          updated_at?: string | null
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "feed_sources_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      imported_articles: {
+        Row: {
+          ai_rewritten_content: string | null
+          ai_rewritten_title: string | null
+          created_at: string | null
+          featured_image: string | null
+          fetched_at: string | null
+          id: string
+          original_content: string | null
+          original_title: string
+          original_url: string
+          post_id: string | null
+          source_id: string
+          source_name: string | null
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          ai_rewritten_content?: string | null
+          ai_rewritten_title?: string | null
+          created_at?: string | null
+          featured_image?: string | null
+          fetched_at?: string | null
+          id?: string
+          original_content?: string | null
+          original_title: string
+          original_url: string
+          post_id?: string | null
+          source_id: string
+          source_name?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          ai_rewritten_content?: string | null
+          ai_rewritten_title?: string | null
+          created_at?: string | null
+          featured_image?: string | null
+          fetched_at?: string | null
+          id?: string
+          original_content?: string | null
+          original_title?: string
+          original_url?: string
+          post_id?: string | null
+          source_id?: string
+          source_name?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "imported_articles_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "imported_articles_source_id_fkey"
+            columns: ["source_id"]
+            isOneToOne: false
+            referencedRelation: "feed_sources"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       post_attachments: {
         Row: {
           created_at: string | null
@@ -556,6 +713,7 @@ export type Database = {
           slug: string
           status: string | null
           title: string
+          translations: Json | null
           updated_at: string | null
           view_count: number | null
         }
@@ -579,6 +737,7 @@ export type Database = {
           slug: string
           status?: string | null
           title: string
+          translations?: Json | null
           updated_at?: string | null
           view_count?: number | null
         }
@@ -602,6 +761,7 @@ export type Database = {
           slug?: string
           status?: string | null
           title?: string
+          translations?: Json | null
           updated_at?: string | null
           view_count?: number | null
         }
@@ -649,6 +809,30 @@ export type Database = {
           id?: string
           role?: string | null
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      rate_limits: {
+        Row: {
+          count: number | null
+          created_at: string | null
+          id: string
+          key: string
+          window_start: string | null
+        }
+        Insert: {
+          count?: number | null
+          created_at?: string | null
+          id?: string
+          key: string
+          window_start?: string | null
+        }
+        Update: {
+          count?: number | null
+          created_at?: string | null
+          id?: string
+          key?: string
+          window_start?: string | null
         }
         Relationships: []
       }
@@ -703,6 +887,7 @@ export type Database = {
           status: string | null
           summary: string | null
           system_requirements: Json | null
+          translations: Json | null
           updated_at: string | null
         }
         Insert: {
@@ -723,6 +908,7 @@ export type Database = {
           status?: string | null
           summary?: string | null
           system_requirements?: Json | null
+          translations?: Json | null
           updated_at?: string | null
         }
         Update: {
@@ -743,6 +929,7 @@ export type Database = {
           status?: string | null
           summary?: string | null
           system_requirements?: Json | null
+          translations?: Json | null
           updated_at?: string | null
         }
         Relationships: []
@@ -856,6 +1043,57 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: []
+      }
+      translation_queue: {
+        Row: {
+          completed_at: string | null
+          created_at: string | null
+          created_by: string | null
+          error: string | null
+          id: string
+          post_id: string
+          started_at: string | null
+          status: string
+          target_language: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          error?: string | null
+          id?: string
+          post_id: string
+          started_at?: string | null
+          status?: string
+          target_language?: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          error?: string | null
+          id?: string
+          post_id?: string
+          started_at?: string | null
+          status?: string
+          target_language?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "translation_queue_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "translation_queue_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_events: {
         Row: {
@@ -1037,9 +1275,26 @@ export type Database = {
       }
     }
     Functions: {
+      check_rate_limit: {
+        Args: { p_key: string; p_limit?: number; p_window_seconds?: number }
+        Returns: boolean
+      }
+      cleanup_old_rate_limits: { Args: never; Returns: undefined }
+      complete_translation_job: {
+        Args: { p_error?: string; p_job_id: string; p_success: boolean }
+        Returns: undefined
+      }
       get_experiment_variant: {
         Args: { p_experiment_slug: string; p_session_id: string }
         Returns: string
+      }
+      get_next_translation_job: {
+        Args: never
+        Returns: {
+          id: string
+          post_id: string
+          target_language: string
+        }[]
       }
       get_recommendations: {
         Args: { p_limit?: number; p_session_id: string }
@@ -1051,8 +1306,23 @@ export type Database = {
           title: string
         }[]
       }
+      increment_view_duration: {
+        Args: { seconds: number; visit_id: string }
+        Returns: undefined
+      }
       is_admin: { Args: never; Returns: boolean }
       is_editor_or_admin: { Args: never; Returns: boolean }
+      record_visit: {
+        Args: {
+          p_browser: string
+          p_device: string
+          p_hash: string
+          p_path: string
+          p_post_id: string
+          p_referrer: string
+        }
+        Returns: string
+      }
       search_posts: {
         Args: {
           match_count?: number
@@ -1198,22 +1468,30 @@ export const Constants = {
   },
 } as const
 
-// ========== Convenience Type Aliases ==========
-// These provide simpler access to table row types
-
-export type Profile = Database['public']['Tables']['profiles']['Row']
-export type Post = Database['public']['Tables']['posts']['Row']
-export type Category = Database['public']['Tables']['categories']['Row']
-export type Tag = Database['public']['Tables']['tags']['Row']
-export type ContactMessage = Database['public']['Tables']['contact_messages']['Row']
-export type SoftwareProduct = Database['public']['Tables']['software_products']['Row']
-export type SoftwareVersion = Database['public']['Tables']['software_versions']['Row']
-export type PostAttachment = Database['public']['Tables']['post_attachments']['Row']
-export type Setting = Database['public']['Tables']['settings']['Row']
-export type AuditLog = Database['public']['Tables']['audit_logs']['Row']
-export type DownloadLog = Database['public']['Tables']['download_logs']['Row']
-export type PostEmbedding = Database['public']['Tables']['post_embeddings']['Row']
-export type UserEvent = Database['public']['Tables']['user_events']['Row']
-export type UserSession = Database['public']['Tables']['user_sessions']['Row']
-export type Experiment = Database['public']['Tables']['experiments']['Row']
-
+// Type aliases for common tables
+export type Profile = Tables<'profiles'>
+export type Post = Tables<'posts'>
+export type Category = Tables<'categories'>
+export type Tag = Tables<'tags'>
+export type PostTag = Tables<'post_tags'>
+export type PostAttachment = Tables<'post_attachments'>
+export type SoftwareProduct = Tables<'software_products'>
+export type SoftwareVersion = Tables<'software_versions'>
+export type DownloadLog = Tables<'download_logs'>
+export type ContactMessage = Tables<'contact_messages'>
+export type Setting = Tables<'settings'>
+export type AuditLog = Tables<'audit_logs'>
+export type UserEvent = Tables<'user_events'>
+export type UserSession = Tables<'user_sessions'>
+export type Experiment = Tables<'experiments'>
+export type ExperimentAssignment = Tables<'experiment_assignments'>
+export type ExperimentConversion = Tables<'experiment_conversions'>
+export type Testimonial = Tables<'testimonials'>
+export type RateLimit = Tables<'rate_limits'>
+export type TranslationQueue = Tables<'translation_queue'>
+export type AnalyticsVisit = Tables<'analytics_visits'>
+export type FeedSource = Tables<'feed_sources'>
+export type ImportedArticle = Tables<'imported_articles'>
+export type AdminNotification = Tables<'admin_notifications'>
+export type ChatSession = Tables<'chat_sessions'>
+export type PostEmbedding = Tables<'post_embeddings'>

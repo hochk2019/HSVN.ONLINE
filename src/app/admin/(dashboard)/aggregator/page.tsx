@@ -1,4 +1,4 @@
-import { getImportedArticles, getFeedSources } from '@/lib/aggregator-actions';
+import { getImportedArticles, getFeedSources, type ImportedArticle } from '@/lib/aggregator-actions';
 import ImportedArticleList from '@/components/admin/ImportedArticleList';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -174,7 +174,7 @@ export default async function AggregatorPage({ searchParams }: Props) {
             )}
 
             {/* Articles List */}
-            <ImportedArticleList articles={articles || []} />
+            <ImportedArticleList articles={(articles || []) as ImportedArticle[]} />
         </div>
     );
 }
