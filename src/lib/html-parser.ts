@@ -191,8 +191,23 @@ export function parseFullHtml(html: string): string {
     // 5. Cleanup unsupported attributes
     content = cleanupAttributes(content);
 
-    // 6. Clean up excessive whitespace
-    content = content.replace(/\n\s*\n\s*\n/g, '\n\n');
+    // 6. Remove whitespace between tags (the main cause of empty paragraphs)
+    content = content.replace(/>\s+</g, '><');
+
+    // 7. Remove empty paragraphs and divs
+    content = content.replace(/<p>\s*<\/p>/gi, '');
+    content = content.replace(/<p><br\s*\/?><\/p>/gi, '');
+    content = content.replace(/<div>\s*<\/div>/gi, '');
+
+    // 8. Remove consecutive <br> tags (more than 2)
+    content = content.replace(/(<br\s*\/?>){3,}/gi, '<br><br>');
+
+    // 9. Clean up whitespace inside paragraphs at start/end
+    content = content.replace(/<p>\s+/gi, '<p>');
+    content = content.replace(/\s+<\/p>/gi, '</p>');
+
+    // 10. Remove any remaining excessive line breaks
+    content = content.replace(/\n{3,}/g, '\n\n');
 
     return content.trim();
 }
