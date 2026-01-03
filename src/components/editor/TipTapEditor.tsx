@@ -24,6 +24,7 @@ import TaskItem from '@tiptap/extension-task-item';
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
 import { common, createLowlight } from 'lowlight';
 import NextImage from 'next/image';
+import { parseFullHtml } from '@/lib/html-parser';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -323,7 +324,9 @@ export default function TipTapEditor({
 
     const insertHtml = () => {
         if (htmlCode.trim()) {
-            editor.chain().focus().insertContent(htmlCode).run();
+            // Parse full HTML document (handles DOCTYPE, style tags, figure/figcaption)
+            const cleanedHtml = parseFullHtml(htmlCode);
+            editor.chain().focus().insertContent(cleanedHtml).run();
         }
         closeHtmlModal();
     };
